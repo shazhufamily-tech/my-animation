@@ -7,28 +7,26 @@
     position: fixed;
     top: 0; left: 0;
     width: 100%; height: 100%;
-    overflow: hidden; /* 这一行至关重要！ */
+    overflow: hidden;
 }
 .floating-photo {
     position: absolute;
-    /* 强制居中对齐 */
+    
     transform: translate(-50%, -50%); 
-    /* 统一大小，防止因为照片长宽比不同导致的视觉错位 */
+   
     width: 80px; 
     height: 80px;
-    object-fit: cover; /* 自动裁切填满正方形 */
+    object-fit: cover;
     border-radius: 5px;
     transition: all 1s ease;
 }
 
-/* 鼠标悬停放大 - 修改 scale(2.0) 即可调节大小 */
 .floating-photo:hover {
     transform: translate(-50%, -50%) scale(5.0) !important;
     z-index: 999;
     box-shadow: 0 0 20px rgba(255, 255, 255, 0.8);
 }
 
-/* 点击后常驻放大 - 修改 scale(2.5) 即可调节大小 */
 .floating-photo.clicked-active {
     transform: translate(-50%, -50%) scale(3.0) !important;
     z-index: 1000;
@@ -44,14 +42,14 @@
     top: 50% !important;
     left: 50% !important;
     transform: translate(-50%, -50%) !important;
-    /* 调大字号，改到 200px 或更大 */
+    
     font-size: 200px !important; 
     color: #fff !important;
     z-index: 99999 !important;
     pointer-events: none !important;
-    /* 去掉白底：将 background 设为 transparent */
+   
     background: transparent !important;
-    /* 增强文字发光，让文字在烟花背景下更清晰 */
+ 
     text-shadow: 0 0 20px #ff0000, 0 0 40px #ff0000, 0 0 60px #ff0000 !important;
     text-align: center;
     width: 100%;
@@ -78,19 +76,19 @@
 
     <canvas id="canvas"></canvas>
     <script>
-        // --- 1. 基础配置与变量 ---
-const messages = ["3", "2", "1", "新年快乐！", "Albert 拜年啦！", "祝你天天开心！"];
+   
+const messages = ["5", "4", "3", "2", "1" ,"小坏蛋！", "爸爸！", "祝你生日快乐！, "健康长大！];
 let idx = 0;
 const overlay = document.getElementById('message-overlay');
 
-// --- 2. 显示照片逻辑 ---
-let mode = 'random'; // 初始模式：'random', 'heart', 'circle'
+
+let mode = 'random'; 
 
 function getPosition(index, total) {
-    // 使用 50% 50% 作为真正的几何中心
+   
     const centerX = 50, centerY = 50; 
-    const scaleX = 2.0; // 调整爱心横向宽度
-    const scaleY = 2.0; // 调整爱心纵向高度
+    const scaleX = 2.0;
+    const scaleY = 2.0;
 
     let t = (index / total) * 2 * Math.PI;
     let x, y;
@@ -114,17 +112,16 @@ function showRandomPhotos() {
     const imageUrls = ["1.jpg", "2.jpg", "3.jpg", "4.jpg", "5.jpg", "6.jpg", "7.jpg", "8.jpg", "9.jpg", "10.jpg", "11.jpg", "12.jpg", "13.jpg", "14.jpg", "15.jpg", "16.jpg", "17.jpg"
 , "18.jpg", "19.jpg", "20.jpg", "21.jpg", "22.jpg", "23.jpg", "24.jpg", "25.jpg"];
     let currentIndex = 0;
-    let isGathering = false; // 新增状态锁
+    let isGathering = false;
 
     const timer = setInterval(() => {
-        if (isGathering) return; // 如果在合体停顿状态，就跳过循环
+        if (isGathering) return;
 
-        // 1. 添加图片逻辑 (确保这里不要有 container.innerHTML = '')
+       
         const img = document.createElement('img');
         img.src = imageUrls[currentIndex];
         img.className = 'floating-photo';
         
-        // 获取位置
         const pos = getPosition(currentIndex, 17);
         img.style.left = pos.x + '%';
         img.style.top = pos.y + '%';
@@ -133,30 +130,28 @@ function showRandomPhotos() {
         
         currentIndex++;
 
-        // 核心：当走完 17 张，我们不删图，不乱动坐标
+       
         if (currentIndex >= 17) {
-            clearInterval(timer); // 停止继续添加新图
+            clearInterval(timer);
             
-            // 仅仅在这里加一个定时器，15秒后清理
+         
             setTimeout(() => {
-                container.innerHTML = ''; // 15秒后清空
+                container.innerHTML = ''; 
                 
-                // 切换模式，准备下一轮
+             
                 mode = (mode === 'heart') ? 'circle' : 'heart';
                 
-                // 重新启动 (确保这段逻辑本身不会报错)
+               
                 showRandomPhotos();
-            }, 15000); // 15秒延时
+            }, 15000);
         }
     }, 1000); 
 }
 
-// --- 新增：专门处理“17张图归位到中心”的动作 ---
 async function gatherToCenter() {
     const container = document.getElementById('photo-container');
     const imgs = container.querySelectorAll('.floating-photo');
     
-    // 让图片按顺序一张张飞到中间 (间隔 150 毫秒)
     for (let i = 0; i < imgs.length; i++) {
         imgs[i].style.transition = "all 0.5s ease-in-out";
         imgs[i].style.right = "50";
@@ -167,12 +162,12 @@ async function gatherToCenter() {
         await new Promise(r => setTimeout(r, 100));
     }
     
-    // 全部飞到中间后，维持 3 秒
+   
     await new Promise(r => setTimeout(r, 3000));
 }
 
 
-// --- 3. 祝福语逻辑 ---
+
 function showMessage() {
     if (idx < messages.length) {
         overlay.innerText = messages[idx];
@@ -184,13 +179,13 @@ function showMessage() {
                 setTimeout(showMessage, 500);
             } else {
                 overlay.style.display = 'none';
-                showRandomPhotos(); // 只有这里才调用显示照片
+                showRandomPhotos(); 
             }
         }, 1000);
     }
 }
 
-// 启动逻辑：监听第一次点击
+
 let isStarted = false;
 window.addEventListener('click', () => {
     if (!isStarted) {
@@ -198,11 +193,6 @@ window.addEventListener('click', () => {
         showMessage();
     }
 });
-
-// --- 5. 你原本的烟花逻辑 ---
-// 把你原本的 canvas 代码（class Firework, animate 等）放在这里即可
-// ... (你的原有烟花代码) ...
-
 
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
@@ -215,7 +205,7 @@ window.addEventListener('click', () => {
             canvas.height = window.innerHeight;
         });
 
-        // 烟花类
+     
         class Firework {
             constructor(x, y, targetX, targetY, color, size) {
                 this.x = x;
@@ -271,7 +261,7 @@ window.addEventListener('click', () => {
             }
         }
 
-        // 粒子类
+      
         class Particle {
             constructor(x, y, hue, size, angle, speed, shape) {
                 this.x = x;
@@ -385,9 +375,9 @@ window.addEventListener('click', () => {
         }
 
         function createLadderFirework(startX, startY) {
-    const steps = 10; // 梯子的阶数
-    const stepHeight = 50; // 每阶高度
-    const stepWidth = 30; // 每阶宽度
+    const steps = 10;
+    const stepHeight = 50; 
+    const stepWidth = 30;
     const baseHue = random(0, 360);
     
     function createStep(index) {
@@ -398,7 +388,7 @@ window.addEventListener('click', () => {
         const hue = (baseHue + index * 15) % 360;
         const size = 1 - (index * 0.05);
         
-        // 创建阶梯形状的粒子
+        
         const particleCount = 30;
         for (let i = 0; i < particleCount; i++) {
             const angle = (Math.PI * 2 * i) / particleCount;
@@ -406,7 +396,7 @@ window.addEventListener('click', () => {
             particles.push(new Particle(x, y, hue, size, angle, speed, 'ladder'));
         }
         
-        // 添加连接线效果
+        
         if (index > 0) {
             const lineParticles = 15;
             const prevX = startX + ((index-1) % 2 === 0 ? stepWidth : -stepWidth);
@@ -428,7 +418,7 @@ window.addEventListener('click', () => {
             }
         }
         
-        // 延迟创建下一阶
+        
         setTimeout(() => createStep(index + 1), 100);
     }
     
@@ -480,16 +470,16 @@ window.addEventListener('click', () => {
     if (Math.random() > 0.5) {
         createSuperFirework(x, y);
     } else {
-        createLadderFirework(x, canvas.height - 100); // 从底部开始生成天梯
+        createLadderFirework(x, canvas.height - 100); 
     }
 });
 
         function autoLaunchFirework() {
-            if (Math.random() > 0.8) { // 20%的概率生成天梯
+            if (Math.random() > 0.8) { 
         let startX = random(canvas.width * 0.2, canvas.width * 0.8);
         createLadderFirework(startX, canvas.height - 100);
     } else {
-        // 原有的普通烟花代码
+        
         let startX = random(canvas.width * 0.2, canvas.width * 0.8);
         let startY = canvas.height;
         let endX = random(canvas.width * 0.1, canvas.width * 0.9);
@@ -530,7 +520,7 @@ window.addEventListener('click', () => {
         window.addEventListener('load', function() {
     var audio = document.getElementById("myAudio");
     
-    // 给页面添加一个点击监听，用户只要点一下屏幕，音乐就会开始
+    
     document.body.addEventListener('click', function() {
         if (audio.paused) {
             audio.play();
